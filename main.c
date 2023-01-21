@@ -1,4 +1,3 @@
-// Usando el módulo 0 de PWM con una frecuencia de reloj del sistema de 20,000,000 Hz. Junto con el generador 0,1,2 habilitar alguno de los pwm's asociados y obtener un PWM cuya frecuencia sea de 50Hz
 #include "lib/include.h"
 
 /*Usando el modulo 0 de PWM con una frecuencia de reloj del sistema de 20,000,000 Hz
@@ -9,18 +8,19 @@
  *
  */
 
-uint16_t red;
-uint16_t green;
-uint16_t blue;
-uint16_t colour;
-uint16_t contador;
+volatile uint8_t red;
+volatile uint8_t green;
+volatile uint8_t blue;
+volatile uint8_t colour;
+
+uint8_t contador;
 
 int main(void)
 {
-    // VARIABLES
-    red = 2;
-    green = 3;
-    blue = 4;
+    // VARIABLES ("R" "G" "B")
+    red = 114;
+    green = 103;
+    blue = 98;
 
     Configurar_PLL(); 
     Configurar_UART0();
@@ -29,33 +29,35 @@ int main(void)
 
     while(1) //LED RGB
     {
+        colour = readChar();
+
         switch (colour)
         {
             case 'r':
-                while (red)
+                while (red == 114)
                 {
-                    red = readChar;   
+                    red = readChar();   
                 }
-                PWM0->_1_CMPA = 20000-((red*10000)/50);
-                red = 2;
+                PWM0->_0_CMPA = 50000-((red*25000)/50);
+                red = 114;
                 break;
 
             case 'g':
                 while (green)
                 {
-                    green = readChar;   
+                    green = readChar();   
                 }
-                PWM0->_1_CMPB = 20000-((green*10000)/50);
-                green = 3;
+                PWM0->_2_CMPA = 50000-((green*25000)/50);
+                green = 103;
                 break;
 
             case 'b':
                 while (blue)
                 {
-                    blue = readChar;   
+                    blue = readChar();   
                 }
-                PWM0->_1_CMPA = 20000-((blue*10000)/50);
-                blue = 4;
+                PWM0->_1_CMPA = 50000-((blue*25000)/50);
+                blue = 98;
                 break;
         }
     }
