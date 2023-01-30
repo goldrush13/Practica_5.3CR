@@ -1,4 +1,3 @@
-// Usando el módulo 0 de PWM con una frecuencia de reloj del sistema de 20,000,000 Hz. Junto con el generador 0,1,2 habilitar alguno de los pwm's asociados y obtener un PWM cuya frecuencia sea de 50Hz
 #include "lib/include.h"
 
 /*Usando el modulo 0 de PWM con una frecuencia de reloj del sistema de 20,000,000 Hz
@@ -9,18 +8,19 @@
  *
  */
 
-uint16_t red;
-uint16_t green;
-uint16_t blue;
-uint16_t colour;
-uint16_t contador;
+volatile uint8_t red;       // PF1
+volatile uint8_t green;     // PF2
+volatile uint8_t blue;      // PG0
+volatile uint8_t colour;
+uint8_t x;
+uint8_t contador;
 
 int main(void)
 {
-    // VARIABLES
-    red = 2;
-    green = 3;
-    blue = 4;
+    // VARIABLES ("R" "G" "B")
+    red = 114;          // valor en ASCII
+    green = 103;
+    blue = 98;
 
     Configurar_PLL(); 
     Configurar_UART0();
@@ -29,34 +29,40 @@ int main(void)
 
     while(1) //LED RGB
     {
+        colour = readChar();
+
         switch (colour)
         {
             case 'r':
-                while (red)
+                while (red == 114)
                 {
-                    red = readChar;   
+                    red = (int)readChar();          // lee el UART 
                 }
-                PWM0->_1_CMPA = 20000-((red*10000)/50);
-                red = 2;
-                break;
+                PWM0->_0_CMPB = 50000-((int)(red*25000)/50);
+                red = 114;
+            break;
 
             case 'g':
-                while (green)
+                while (green == 103)
                 {
-                    green = readChar;   
+                    green = (int)readChar();        // lee el UART
                 }
-                PWM0->_1_CMPB = 20000-((green*10000)/50);
-                green = 3;
-                break;
+                PWM0->_2_CMPA = 50000-((int)(green*25000)/50);
+                green = 103;
+            break;
 
             case 'b':
-                while (blue)
+                while (blue == 98)
                 {
-                    blue = readChar;   
+                    blue = (int)readChar();   
                 }
-                PWM0->_1_CMPA = 20000-((blue*10000)/50);
-                blue = 4;
-                break;
+                PWM0->_1_CMPA = 50000-((int)(blue*25000)/50);
+                blue = 98;
+            break;
+
+            default:
+                x = 28;
+            break;
         }
     }
 }
